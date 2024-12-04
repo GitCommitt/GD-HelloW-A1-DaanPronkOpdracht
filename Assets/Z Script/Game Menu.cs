@@ -158,6 +158,8 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+
+
     // Update de kleur van de knoppen op basis van zichtbaarheid
     private void UpdateButtonColor(Button button, bool isVisible)
     {
