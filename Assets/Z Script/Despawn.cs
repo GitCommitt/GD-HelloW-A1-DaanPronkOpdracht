@@ -20,29 +20,23 @@ namespace MyGameNamespace
 
         private void Start()
         {
-            // Zorg ervoor dat er een AudioSource-component is
             audioSource = GetComponent<AudioSource>();
             if (audioSource == null)
             {
-                // Voeg een AudioSource-component toe als deze nog niet bestaat
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
         }
 
-        // Deze functie wordt aangeroepen wanneer een ander object de trigger raakt
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag(playerTag))
             {
                 if (objectToDelete != null)
                 {
-                    // Speel het geluid af
                     PlayPickupSound();
 
-                    // Verwijder het object na een korte vertraging
                     Destroy(objectToDelete);
 
-                    // Verhoog de score met 1
                     if (scoreManager != null)
                     {
                         scoreManager.AddScore(1);
@@ -59,7 +53,6 @@ namespace MyGameNamespace
             }
         }
 
-        // Functie om het geluidseffect af te spelen
         private void PlayPickupSound()
         {
             if (pickupSound != null && audioSource != null)

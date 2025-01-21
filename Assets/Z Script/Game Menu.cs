@@ -1,85 +1,69 @@
 using UnityEngine;
-using UnityEngine.UI; // Zorg ervoor dat je deze toevoegt voor UI-elementen
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject menuPanel; // Het menu panel dat we gebruiken
-    public GameObject[] otherUIElements; // Andere UI-elementen die we willen verbergen
-    public GameObject hud; // UI-element voor HUD
-    public GameObject radar; // UI-element voor Radar
-    public GameObject fpsText; // UI-element voor FPS
-    public GameObject dateText; // UI-element voor Datum/Tijd
-    public CameraController cameraController; // Verwijzing naar het camera controller script
+    public GameObject menuPanel;
+    public GameObject[] otherUIElements;
+    public GameObject hud;
+    public GameObject radar;
+    public GameObject fpsText;
+    public GameObject dateText;
+    public CameraController cameraController;
 
-    public Button hudButton; // Koppeling naar de HUD toggle knop
-    public Button radarButton; // Koppeling naar de Radar toggle knop
-    public Button fpsButton; // Koppeling naar de FPS toggle knop
-    public Button dateButton; // Koppeling naar de Datum/Tijd toggle knop
+    public Button hudButton;
+    public Button radarButton;
+    public Button fpsButton;
+    public Button dateButton;
 
-    private bool isGamePaused = false; // Houdt bij of het spel gepauzeerd is 
+    private bool isGamePaused = false;
 
     private void Start()
     {
-        // Zorg ervoor dat het menu niet zichtbaar is bij de start van het spel
         menuPanel.SetActive(false);
-        SetUIElementsActive(true); // Zorg ervoor dat andere UI-elementen zichtbaar zijn
-
-        // Maak de cursor onzichtbaar bij het starten
-        Cursor.lockState = CursorLockMode.Locked; // Vergrendel de cursor
-        Cursor.visible = false; // Maak de cursor onzichtbaar
-
-        // Zet de datum/tijd in de UI
+        SetUIElementsActive(true);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         UpdateDateTime();
-
-        // Zet de knoppenkleur op basis van de zichtbaarheid van de UI-elementen
         UpdateButtonColors();
     }
 
     private void Update()
     {
-        // Detecteer de F1-toets om het menu te toggelen
         if (Input.GetKeyDown(KeyCode.F1))
         {
             ToggleMenu();
         }
-
-        // Update de FPS weergave
         UpdateFPS();
     }
 
     private void ToggleMenu()
     {
-        // Wijzig de status van isGamePaused
         isGamePaused = !isGamePaused;
-
-        // Stel het menu in op de huidige status
         menuPanel.SetActive(isGamePaused);
 
-        // Pauze of hervat het spel op basis van de menu-status
         if (isGamePaused)
         {
-            Time.timeScale = 0f; // Pauze de game
-            SetUIElementsActive(false); // Zet andere UI-elementen inactief
-            Cursor.lockState = CursorLockMode.None; // Laat de cursor vrij
-            Cursor.visible = true; // Maak de cursor zichtbaar
+            Time.timeScale = 0f;
+            SetUIElementsActive(false);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
-            // Schakel de camera controller uit
             if (cameraController != null)
             {
-                cameraController.enabled = false; // Deactiveer camera beweging
+                cameraController.enabled = false;
             }
         }
         else
         {
-            Time.timeScale = 1f; // Hervat de game
-            SetUIElementsActive(true); // Zet andere UI-elementen actief
-            Cursor.lockState = CursorLockMode.Locked; // Vergrendel de cursor
-            Cursor.visible = false; // Maak de cursor onzichtbaar
+            Time.timeScale = 1f;
+            SetUIElementsActive(true);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
-            // Schakel de camera controller in
             if (cameraController != null)
             {
-                cameraController.enabled = true; // Heractiveer camera beweging
+                cameraController.enabled = true;
             }
         }
     }
@@ -88,7 +72,10 @@ public class MenuManager : MonoBehaviour
     {
         foreach (GameObject uiElement in otherUIElements)
         {
-            uiElement.SetActive(isActive);
+            if (uiElement.activeSelf != isActive)
+            {
+                uiElement.SetActive(isActive);
+            }
         }
     }
 
@@ -96,8 +83,8 @@ public class MenuManager : MonoBehaviour
     {
         if (fpsText != null)
         {
-            float fps = 1.0f / Time.deltaTime; // Bereken de frames per seconde
-            fpsText.GetComponent<Text>().text = "FPS: " + Mathf.Ceil(fps).ToString(); // Update de tekst
+            float fps = 1.0f / Time.deltaTime;
+            fpsText.GetComponent<Text>().text = "FPS: " + Mathf.Ceil(fps).ToString();
         }
     }
 
@@ -106,84 +93,76 @@ public class MenuManager : MonoBehaviour
         if (dateText != null)
         {
             System.DateTime now = System.DateTime.Now;
-            dateText.GetComponent<Text>().text = "Datum: " + now.ToString("dd-MM-yyyy HH:mm:ss"); // Update de tekst
+            dateText.GetComponent<Text>().text = "Datum: " + now.ToString("dd-MM-yyyy HH:mm:ss");
         }
     }
 
-    // Toggle de HUD zichtbaarheid
     public void ToggleHUDVisibility()
     {
         if (hud != null)
         {
-            bool isVisible = !hud.activeSelf; // Bepaal de nieuwe zichtbaarheid
-            hud.SetActive(isVisible); // Toggle de HUD
-            UpdateButtonColor(hudButton, isVisible); // Update de knopkleur
+            bool isVisible = !hud.activeSelf;
+            hud.SetActive(isVisible);
+            UpdateButtonColor(hudButton, isVisible);
             Debug.Log("HUD is now " + (isVisible ? "visible." : "hidden."));
         }
     }
 
-    // Toggle de Radar zichtbaarheid
     public void ToggleRadarVisibility()
     {
         if (radar != null)
         {
-            bool isVisible = !radar.activeSelf; // Bepaal de nieuwe zichtbaarheid
-            radar.SetActive(isVisible); // Toggle de Radar
-            UpdateButtonColor(radarButton, isVisible); // Update de knopkleur
+            bool isVisible = !radar.activeSelf;
+            radar.SetActive(isVisible);
+            UpdateButtonColor(radarButton, isVisible);
             Debug.Log("Radar is now " + (isVisible ? "visible." : "hidden."));
         }
     }
 
-    // Toggle de FPS zichtbaarheid
     public void ToggleFPSVisibility()
     {
         if (fpsText != null)
         {
-            bool isVisible = !fpsText.activeSelf; // Bepaal de nieuwe zichtbaarheid
-            fpsText.SetActive(isVisible); // Toggle de FPS
-            UpdateButtonColor(fpsButton, isVisible); // Update de knopkleur
+            bool isVisible = !fpsText.activeSelf;
+            fpsText.SetActive(isVisible);
+            UpdateButtonColor(fpsButton, isVisible);
             Debug.Log("FPS is now " + (isVisible ? "visible." : "hidden."));
         }
     }
 
-    // Toggle de Datum/Tijd zichtbaarheid
     public void ToggleDateVisibility()
     {
         if (dateText != null)
         {
-            bool isVisible = !dateText.activeSelf; // Bepaal de nieuwe zichtbaarheid
-            dateText.SetActive(isVisible); // Toggle de Datum/Tijd
-            UpdateButtonColor(dateButton, isVisible); // Update de knopkleur
+            bool isVisible = !dateText.activeSelf;
+            dateText.SetActive(isVisible);
+            UpdateButtonColor(dateButton, isVisible);
             Debug.Log("Datum/Tijd is now " + (isVisible ? "visible." : "hidden."));
         }
     }
 
-
-
-    // Update de kleur van de knoppen op basis van zichtbaarheid
     private void UpdateButtonColor(Button button, bool isVisible)
     {
-        ColorBlock colorBlock = button.colors; // Krijg de huidige kleuren van de knop
+        ColorBlock colorBlock = button.colors;
         if (isVisible)
         {
-            colorBlock.normalColor = Color.green; // Zet de kleur op groen als zichtbaar
-            colorBlock.highlightedColor = Color.green; // Zet de hover kleur op groen
-            colorBlock.pressedColor = Color.green; // Zet de ingedrukte kleur op groen
+            colorBlock.normalColor = Color.green;
+            colorBlock.highlightedColor = Color.green;
+            colorBlock.pressedColor = Color.green;
             colorBlock.selectedColor = Color.green;
         }
         else
         {
-            colorBlock.normalColor = Color.red; // Zet de kleur op rood als verborgen
-            colorBlock.highlightedColor = Color.red; // Zet de hover kleur op rood
-            colorBlock.pressedColor = Color.red; // Zet de ingedrukte kleur op rood
+            colorBlock.normalColor = Color.red;
+            colorBlock.highlightedColor = Color.red;
+            colorBlock.pressedColor = Color.red;
             colorBlock.selectedColor = Color.red;
         }
-        button.colors = colorBlock; // Pas de kleuren toe
+        button.colors = colorBlock;
     }
 
     private void UpdateButtonColors()
     {
-        // Update de kleuren van de knoppen bij de start
         UpdateButtonColor(hudButton, hud.activeSelf);
         UpdateButtonColor(radarButton, radar.activeSelf);
         UpdateButtonColor(fpsButton, fpsText.activeSelf);
